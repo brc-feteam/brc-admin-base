@@ -25,20 +25,20 @@ const menuData = [
   {
     name: '物业管理',
     icon: 'table',
-    path: 'thing',
+    path: 'aliyun',
     children: [
       {
-        name: '产品列表',
-        path: 'product',
+        name: '账户属性',
+        path: 'accountatt',
       },
-      {
-        name: '硬件列表',
-        path: 'device',
-      },
-      {
-        name: '账户',
-        path: 'account',
-      },
+      // {
+      //   name: '产品列表',
+      //   path: 'product',
+      // },
+      // {
+      //   name: '硬件列表',
+      //   path: 'device',
+      // },
     ],
   },
   {

@@ -17,7 +17,7 @@ const AccountList = ({
   const listProps = {
     pagination,
     dataSource: list,
-    loading: loading.effects['aliyun/fetch'],
+    loading: loading.effects['aliyun/fetchIotxAccountListAttr'],
     onChange(page) {
       dispatch(routerRedux.push({
         pathname,

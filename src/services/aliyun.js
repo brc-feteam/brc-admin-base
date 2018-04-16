@@ -16,7 +16,7 @@ export async function iotxAccountListAttr(params) {
 // https://linkdevelop.aliyun.com/docCenter#/apiDetail/817/1928
 // http://localhost:8000/api/v2/aliyun/productInfoListGet
 export async function productInfoListGet(params) {
-  const url = `${aliyun}/productInfoList`
+  const url = `${aliyun}/productInfoListGet`
   return request(url, {
     method: 'get',
     data: params,

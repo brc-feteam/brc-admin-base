@@ -1,148 +1,46 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'dva'
+import { routerRedux } from 'dva/router'
+import queryString from 'query-string'
 import moment from 'moment';
-import { List, Card, Row, Col, Radio, Input, Progress, Button, Icon, Dropdown, Menu, Avatar } from 'antd';
-
+import { Table, List, Card, Row, Col, Radio, Input, Progress, Button, Icon, Dropdown, Menu, Avatar } from 'antd';
 import styles from './ProductList.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Search = Input.Search;
 
-function fakeList(count) {
-  const titles = [
-    'Alipay',
-    'Angular',
-    'Ant Design',
-    'Ant Design Pro',
-    'Bootstrap',
-    'React',
-    'Vue',
-    'Webpack',
-  ];
-  const avatars = [
-    'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png', // Alipay
-    'https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png', // Angular
-    'https://gw.alipayobjects.com/zos/rmsportal/dURIMkkrRFpPgTuzkwnB.png', // Ant Design
-    'https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png', // Ant Design Pro
-    'https://gw.alipayobjects.com/zos/rmsportal/siCrBXXhmvTQGWPNLBow.png', // Bootstrap
-    'https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png', // React
-    'https://gw.alipayobjects.com/zos/rmsportal/ComBAopevLwENQdKWiIn.png', // Vue
-    'https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png', // Webpack
-  ];
-  const covers = [
-    'https://gw.alipayobjects.com/zos/rmsportal/HrxcVbrKnCJOZvtzSqjN.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/alaPpKWajEbIYEUvvVNf.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/RLwlKSYGSXGHuWSojyvp.png',
-    'https://gw.alipayobjects.com/zos/rmsportal/gLaIAoVWTtLbBWZNYEMg.png',
-  ];
-  const desc = [
-    'Follow Ant Design specification.',
-    'Typical templates for enterprise applications.',
-    'Easy to use mock development solution.',
-    'Fly safely with unit test and e2e test.',
-    'Customizable theme with simple config.',
-  ];
+@connect(({ aliyun, loading }) => ({
+  aliyun,
+  loading,
+}))
 
-  const user = [
-    'Jake',
-    'Tom',
-    'Kobe',
-    'Alibaba',
-    'July',
-    'Andy',
-    'John',
-    'Messi',
-    'Jordan',
-    'Mach',
-  ];
-
-  const list = [];
-  for (let i = 0; i < count; i += 1) {
-    list.push({
-      id: `fake-list-${i}`,
-      owner: user[i % 10],
-      title: titles[i % 8],
-      avatar: avatars[i % 8],
-      cover: parseInt(i / 4, 10) % 2 === 0 ? covers[i % 4] : covers[3 - (i % 4)],
-      status: ['active', 'exception', 'normal'][i % 3],
-      percent: Math.ceil(Math.random() * 50) + 50,
-      logo: avatars[i % 8],
-      href: 'https://ant.design',
-      updatedAt: new Date(new Date().getTime() - (1000 * 60 * 60 * 2 * i)),
-      createdAt: new Date(new Date().getTime() - (1000 * 60 * 60 * 2 * i)),
-      subDescription: desc[i % 5],
-      description: 'An out-of-box UI solution for enterprise applications.',
-      activeUser: Math.ceil(Math.random() * 100000) + 100000,
-      newUser: Math.ceil(Math.random() * 1000) + 1000,
-      star: Math.ceil(Math.random() * 100) + 100,
-      like: Math.ceil(Math.random() * 100) + 100,
-      message: Math.ceil(Math.random() * 10) + 10,
-      content: 'An out-of-box UI solution for enterprise applications',
-      members: [
-        {
-          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/ZiESqWwCXBRQoaPONSJe.png',
-          name: 'Andy',
-        },
-        {
-          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/tBOxZPlITHqwlGjsJWaF.png',
-          name: 'Jake',
-        },
-        {
-          avatar: 'https://gw.alipayobjects.com/zos/rmsportal/sBxjgqiuHMGRkIjqlQCd.png',
-          name: 'Tom',
-        },
-      ],
+class ProductList extends PureComponent {
+  static defaultProps = {
+  }
+  handleChangeStatus = e => {
+    e.preventDefault();
+    this.props.dispatch({
+      type: 'aliyun/fetchProductInfoListGet',
+      payload: {
+        status: e.target.value,
+      },
     });
   }
-
-  return list;
-}
-
-class BasicList extends PureComponent {
-  static defaultProps = {
-    list: {
-      list: fakeList(10),
-      loading: false,
-    },
-  }
   render() {
-    const { list: { list, loading } } = this.props;
-
+    const { aliyun: { productInfoList, pagination }, loading, dispatch, location } = this.props;
+    const { query, pathname } = location;
     const extraContent = (
       <div className={styles.extraContent}>
-        <RadioGroup defaultValue="all">
-          <RadioButton value="all">all</RadioButton>
-          <RadioButton value="progress">progress</RadioButton>
-          <RadioButton value="waiting">waiting</RadioButton>
+        <RadioGroup defaultValue="DEVELOPMENT_STATUS" onChange={this.handleChangeStatus}>
+          <RadioButton value="DEVELOPMENT_STATUS">开发中</RadioButton>
+          <RadioButton value="RELEASE_STATUS">已发布</RadioButton>
         </RadioGroup>
         <Search
           className={styles.extraContentSearch}
-          placeholder="input..."
+          placeholder="请输入..."
           onSearch={() => ({})}
         />
-      </div>
-    );
-
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: true,
-      pageSize: 5,
-      total: 50,
-    };
-
-    const ListContent = ({ data: { owner, createdAt, percent, status } }) => (
-      <div className={styles.listContent}>
-        <div>
-          <span>Owner</span>
-          <p>{owner}</p>
-        </div>
-        <div>
-          <span>Begin</span>
-          <p>{moment(createdAt).format('YYYY-MM-DD hh:mm')}</p>
-        </div>
-        <div>
-          <Progress percent={percent} status={status} strokeWidth={6} />
-        </div>
       </div>
     );
 
@@ -165,22 +63,77 @@ class BasicList extends PureComponent {
       </Dropdown>
     );
 
+    const columns = [
+      { "title": "产品名称", "dataIndex": "name" },
+      { "title": "产品型号", "dataIndex": "", render: () => <span>-</span>, width: 100 },
+      { "title": "productKey", "dataIndex": "productKey", width: 140 },
+      { "title": "节点类型", "dataIndex": "nodeType", width: 100 },
+      { "title": "状态", "dataIndex": "status", width: 150 },
+      { "title": "创建时间", "dataIndex": "gmtCreate", width: 180 },
+      // { "title": "accessMethod", "dataIndex": "accessMethod" },
+      // { "title": "gmtModified", "dataIndex": "gmtModified" },
+      // { "title": "productModel", "dataIndex": "productModel" },
+      // { "title": "modifier", "dataIndex": "modifier" },
+      // { "title": "categoryName", "dataIndex": "categoryName" },
+      // { "title": "creator", "dataIndex": "creator" },
+      // { "title": "productId", "dataIndex": "productId" },
+      // { "title": "netType", "dataIndex": "netType" },
+      // { "title": "dataFormat", "dataIndex": "dataFormat" },
+      // { "title": "aliyunCommodityCode", "dataIndex": "aliyunCommodityCode" },
+      // { "title": "productSecret", "dataIndex": "productSecret" },
+      // { "title": "categoryKey", "dataIndex": "categoryKey" },
+      // { "title": "domain", "dataIndex": "domain" },
+      // { "title": "tenantId", "dataIndex": "tenantId" },
+      // { "title": "region", "dataIndex": "region" },
+      // { "title": "rbacTenantId", "dataIndex": "rbacTenantId" },
+      // { "title": "ownerDomain", "dataIndex": "ownerDomain" },
+      // { "title": "categoryId", "dataIndex": "categoryId" },
+      {
+        "title": "Action",
+        "dataIndex": "",
+        "key": "x",
+        width: 150,
+        render: () => <div><a href="javascript:;">查看</a>,  <MoreBtn /></div>,
+      },
+    ];
+
+    const tableProps = {
+      pagination,
+      dataSource: productInfoList,
+      loading: loading.effects['aliyun/fetchProductInfoListGet'],
+      onChange(page) {
+        dispatch(routerRedux.push({
+          pathname,
+          search: queryString.stringify({
+            ...query,
+            page: page.current,
+            pageSize: page.pageSize,
+          }),
+        }))
+      },
+    }
+
     return (
       <div className={styles.standardList}>
         <Card
           bordered={false}
-          title="Basic List"
+          title="产品接入-模组开发调试产品"
           style={{ marginTop: 16 }}
           extra={extraContent}
         >
-          <Button type="dashed" style={{ width: '100%' }}>
-            <Icon type="plus" /> Add
-          </Button>
-          <List
+          <Table
+            {...tableProps}
+            bordered
+            columns={columns}
+            simple
+            className={styles.table}
+            rowKey={record => record.productId}
+          />
+          {/* <List
             rowKey="id"
-            loading={loading}
+            loading={loading.effects['aliyun/fetchProductInfoListGet']}
             pagination={paginationProps}
-            dataSource={list}
+            dataSource={productInfoList}
             renderItem={item => (
               <List.Item
                 actions={[<a>Edit</a>, <MoreBtn />]}
@@ -192,12 +145,56 @@ class BasicList extends PureComponent {
                 />
                 <ListContent data={item} />
               </List.Item>
-              )}
-          />
+            )}
+          /> */}
         </Card>
       </div>
     );
   }
 }
 
-export default BasicList;
+export default ProductList
+
+
+
+// const demoItem = {
+//   "accessMethod": "MODULE_DEV",
+//   "gmtModified": "2018-03-31 00:29:13",
+//   "productModel": "蓝光模组测试cs1's product",
+//   "modifier": "5018alf53df0a9046f4a48981b6814eaedbc4562",
+//   "productKey": "a1L2VpOLSUn",
+//   "categoryName": "水表",
+//   "creator": "5018alf53df0a9046f4a48981b6814eaedbc4562",
+//   "productId": 155071,
+//   "netType": "NET_CELLULAR",
+//   "dataFormat": "ALINK_FORMAT",
+//   "aliyunCommodityCode": "tmp",
+//   "productSecret": "cLUuOpofeGFjnUY8",
+//   "categoryKey": "WaterMeter",
+//   "nodeType": "DEVICE",
+//   "gmtCreate": "2018-03-31 00:29:13",
+//   "domain": "a1L2VpOLSUn",
+//   "name": "蓝光模组测试的调试产品",
+//   "tenantId": 12377,
+//   "region": "cn-shanghai",
+//   "rbacTenantId": "4AE1852DA9884731A4AAE64D6636CD3E",
+//   "ownerDomain": "tmp_5018alf53df0a9046f4a48981b6814eaedbc4562",
+//   "categoryId": 21,
+//   "status": "DEVELOPMENT_STATUS",
+// };
+
+// const columns = [];
+
+// Object.keys(demoItem).map(key => {
+//   columns.push({
+//     title: key,
+//     dataIndex: key,
+//   })
+// });
+
+// columns.push({
+//   title: 'Action',
+//   dataIndex: '',
+//   key: 'x',
+//   render: () => <a href="javascript:;">Delete</a>,
+// });

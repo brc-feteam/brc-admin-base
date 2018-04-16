@@ -66,7 +66,7 @@ export default function request(url, options) {
     }
   }
 
-  debug('fetch ajax url = ', url);
+  debug('fetch ajax url = %s, opts = %s', url, newOptions);
 
   return fetch(url, newOptions)
     .then(checkStatus)

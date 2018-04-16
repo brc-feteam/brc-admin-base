@@ -2,6 +2,7 @@ import modelExtend from 'dva-model-extend'
 import queryString from 'query-string'
 import { iotxAccountListAttr, productInfoListGet } from '../services/aliyun';
 import base from './common/base'
+// import { stat } from 'fs';
 
 const debug = require('debug')('brc-models[aliyun]');
 
@@ -10,6 +11,9 @@ export default modelExtend(base.pageModel, {
   state: {
     productInfoList: [],
     productStatus: 'DEVELOPMENT_STATUS', // RELEASE_STATUS
+    productNodeType: "DEVICE",
+    locationPathname: '',
+    locationQuery: {},
   },
   effects: {
     *fetchIotxAccountListAttr({ payload }, { call, put }) {
@@ -32,10 +36,10 @@ export default modelExtend(base.pageModel, {
         throw data
       }
     },
-    
-    *fetchProductInfoListGet({ payload }, { call, put }) {
 
-      console.log(payload)
+    *fetchProductInfoListGet({ payload }, { call, put }) {
+      console.info('fetchProductInfoListGet', payload)
+
       const data = yield call(productInfoListGet, payload);
 
       if (data && data.code === 200) {
@@ -69,14 +73,32 @@ export default modelExtend(base.pageModel, {
         },
       }
     },
-    // save(state, action) {
-    //   return {
-    //     ...state,
-    //   };
-    // },
+    handleProductStatus (state, { payload }) {
+      return {
+        ...state,
+        productStatus: payload,
+      }
+    },
   },
   subscriptions: {
+
+    setupHistory({ dispatch, history }) {
+      console.log('subscriptions - setupHistory')
+
+      history.listen((location) => {
+        dispatch({
+          type: 'updateState',
+          payload: {
+            locationPathname: location.pathname,
+            locationQuery: queryString.parse(location.search),
+          },
+        })
+      })
+    },
+
     setup({ dispatch, history }) {
+      console.log('subscriptions - aliyun - setup')
+
       history.listen((location) => {
         if (location.pathname === '/aliyun/accountatt') {
           dispatch({
@@ -94,8 +116,6 @@ export default modelExtend(base.pageModel, {
             "status": "DEVELOPMENT_STATUS",
             "nodeType": "DEVICE",
           }
-
-          // queryString.stringify()
 
           dispatch({
             type: 'fetchProductInfoListGet',

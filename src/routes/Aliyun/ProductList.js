@@ -2,8 +2,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'dva'
 import { routerRedux } from 'dva/router'
 import queryString from 'query-string'
-import moment from 'moment';
-import { Table, List, Card, Row, Col, Radio, Input, Progress, Button, Icon, Dropdown, Menu, Avatar } from 'antd';
+// import moment from 'moment';
+import { Table, Card, Radio, Input, Icon, Dropdown, Menu } from 'antd';
 import styles from './ProductList.less';
 
 const RadioButton = Radio.Button;
@@ -12,27 +12,28 @@ const Search = Input.Search;
 
 @connect(({ aliyun, loading }) => ({
   aliyun,
-  loading,
+  loading: loading.effects['aliyun/fetchProductInfoListGet'],
+  productNodeType: aliyun.productNodeType,
 }))
 
 class ProductList extends PureComponent {
   static defaultProps = {
   }
+
   handleChangeStatus = e => {
     e.preventDefault();
     this.props.dispatch({
-      type: 'aliyun/fetchProductInfoListGet',
-      payload: {
-        status: e.target.value,
-      },
+      type: 'aliyun/handleProductStatus',
+      payload: e.target.value,
     });
   }
+
   render() {
-    const { aliyun: { productInfoList, pagination }, loading, dispatch, location } = this.props;
+    const { aliyun: { productInfoList, pagination, productStatus }, loading, dispatch, location } = this.props;
     const { query, pathname } = location;
     const extraContent = (
       <div className={styles.extraContent}>
-        <RadioGroup defaultValue="DEVELOPMENT_STATUS" onChange={this.handleChangeStatus}>
+        <RadioGroup defaultValue={productStatus} onChange={this.handleChangeStatus}>
           <RadioButton value="DEVELOPMENT_STATUS">开发中</RadioButton>
           <RadioButton value="RELEASE_STATUS">已发布</RadioButton>
         </RadioGroup>
@@ -100,7 +101,7 @@ class ProductList extends PureComponent {
     const tableProps = {
       pagination,
       dataSource: productInfoList,
-      loading: loading.effects['aliyun/fetchProductInfoListGet'],
+      loading,
       onChange(page) {
         dispatch(routerRedux.push({
           pathname,

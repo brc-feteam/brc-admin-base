@@ -31,10 +31,10 @@ const menuData = [
         name: '账户属性',
         path: 'accountatt',
       },
-      // {
-      //   name: '产品列表',
-      //   path: 'product',
-      // },
+      {
+        name: '产品列表',
+        path: 'productlist',
+      },
       // {
       //   name: '硬件列表',
       //   path: 'device',

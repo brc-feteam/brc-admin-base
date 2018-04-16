@@ -174,6 +174,9 @@ export const getRouterData = app => {
     '/aliyun/accountatt': {
       component: dynamicWrapper(app, ['aliyun'], () => import('../routes/Aliyun/AccountList')),
     },
+    '/aliyun/productlist': {
+      component: dynamicWrapper(app, ['aliyun'], () => import('../routes/Aliyun/ProductList')),
+    },
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());

@@ -4,30 +4,14 @@ import { iotxAccountListAttr } from '../services/aliyun';
 import base from './common/base'
 
 const debug = require('debug')('brc-models[aliyun]');
-// export default modelExtend(base.pageModel, {
-//   namespace: 'aliyun',
-
-//   state: {
-//     list: [],
-//     pagination: 10,
-//   },
-
-//   reducers: {
-//   },
-
-//   effects: {
-//     *fetch({ payload }, { call, put }) {
-//       // todo
-//     },
-//   },
-// })
 
 export default modelExtend(base.pageModel, {
   namespace: "aliyun",
-  // state: {
-  // },
+  state: {
+    productInfoList:[],
+  },
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetchIotxAccountListAttr({ payload }, { call, put }) {
       const data = yield call(iotxAccountListAttr, payload);
       if (data && data.code === 200) {
         yield put({
@@ -60,7 +44,7 @@ export default modelExtend(base.pageModel, {
       history.listen((location) => {
         if (location.pathname === '/aliyun/accountatt') {
           dispatch({
-            type: 'fetch',
+            type: 'fetchIotxAccountListAttr',
             payload: {
               status: 2,
               ...queryString.parse(location.search),

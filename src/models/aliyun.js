@@ -28,11 +28,8 @@ export default modelExtend(base.pageModel, {
   // },
   effects: {
     *fetch({ payload }, { call, put }) {
-
-      debug('debug fetch')
-
       const data = yield call(iotxAccountListAttr, payload);
-      if (data && data.success) {
+      if (data && data.code === 200) {
         yield put({
           type: 'querySuccess',
           payload: {
@@ -45,6 +42,8 @@ export default modelExtend(base.pageModel, {
           },
         })
       } else {
+        debug('error data=%o', data)
+        console.error('error data=', data)
         throw data
       }
     },
@@ -57,13 +56,13 @@ export default modelExtend(base.pageModel, {
     // },
   },
   subscriptions: {
-    setup({ dispatch, history}){
-      history.listen((location)=>{
-        if(location.pathname === '/aliyun/accountatt') {
+    setup({ dispatch, history }) {
+      history.listen((location) => {
+        if (location.pathname === '/aliyun/accountatt') {
           dispatch({
             type: 'fetch',
-            payload:{
-              status:2,
+            payload: {
+              status: 2,
               ...queryString.parse(location.search),
             },
           })

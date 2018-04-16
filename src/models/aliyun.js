@@ -1,8 +1,9 @@
 import modelExtend from 'dva-model-extend'
 import queryString from 'query-string'
-import { accountatt } from '../services/aliyun';
+import { iotxAccountListAttr } from '../services/aliyun';
 import base from './common/base'
 
+const debug = require('debug')('brc-models[aliyun]');
 // export default modelExtend(base.pageModel, {
 //   namespace: 'aliyun',
 
@@ -28,7 +29,9 @@ export default modelExtend(base.pageModel, {
   effects: {
     *fetch({ payload }, { call, put }) {
 
-      const data = yield call(accountatt, payload);
+      debug('debug fetch')
+
+      const data = yield call(iotxAccountListAttr, payload);
       if (data && data.success) {
         yield put({
           type: 'querySuccess',

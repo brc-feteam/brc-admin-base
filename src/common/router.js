@@ -172,7 +172,7 @@ export const getRouterData = app => {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
     '/aliyun/accountatt': {
-      component: dynamicWrapper(app,['aliyun'], ()=>import('../routes/Aliyun/AccountList')),
+      component: dynamicWrapper(app, ['aliyun'], () => import('../routes/Aliyun/AccountList')),
     },
   };
   // Get name from ./menu.js or just set it in the router data.

@@ -20,16 +20,16 @@ export default {
   },
   env: {
     development: {
-      extraBabelPlugins: [
-        "dva-hmr",
-        "transform-runtime",
-        [
-          "import", {
-            "libraryName": "antd",
-            "style": true
-          }
-        ]
-      ]
+      // extraBabelPlugins: [
+      //   "dva-hmr",
+      //   "transform-runtime",
+      //   [
+      //     "import", {
+      //       "libraryName": "antd",
+      //       "style": true
+      //     }
+      //   ]
+      // ]
     },
     production: {
       extraBabelPlugins: [

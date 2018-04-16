@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "precommit": "npm run lint-staged",
-    "start": "cross-env ESLINT=none roadhog dev",
+    "start": "cross-env ESLINT=none DEBUG=request:brc-* roadhog dev",
     "start:no-proxy": "cross-env NO_PROXY=true ESLINT=none roadhog dev",
     "build": "cross-env ESLINT=none roadhog build",
     "site": "roadhog-api-doc static && gh-pages -d dist",
@@ -56,6 +56,7 @@
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "cross-env": "^5.1.1",
     "cross-port-killer": "^1.0.1",
+    "debug": "^3.1.0",
     "dva-model-extend": "^0.1.2",
     "enzyme": "^3.1.0",
     "eslint": "^4.14.0",

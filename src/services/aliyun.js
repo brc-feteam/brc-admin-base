@@ -1,12 +1,14 @@
-// import { stringify } from 'qs';
 import request from '../utils/request';
 import { api } from '../utils/config';
+// import { stringify } from 'qs';
+
+const debug = require('debug')('brc-service[aliyun]');
 
 const { aliyun } = api;
 
-export async function accountatt(params) {
-  const url = `${aliyun}/accountatt`
-  console.log(url)
+export async function iotxAccountListAttr(params) {
+  const url = `${aliyun}/iotxAccountListAttr`
+  debug('url=%s', url)
   return request({
     method: 'get',
     url,

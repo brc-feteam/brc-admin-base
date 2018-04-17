@@ -103,7 +103,7 @@ class ProductList extends PureComponent {
         "dataIndex": "",
         "key": "x",
         width: 150,
-        render: () => <div><a href="javascript:;">查看</a>,  <MoreBtn /></div>,
+        render: (item) => <div><a href={`/aliyun/ProductDetail/${item.productKey}`}>查看</a>,  <MoreBtn /></div>,
       },
     ];
 

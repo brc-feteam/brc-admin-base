@@ -1,6 +1,7 @@
 import modelExtend from 'dva-model-extend'
 import queryString from 'query-string'
-import { iotxAccountListAttr, productInfoListGet } from '../services/aliyun';
+import pathToRegexp from 'path-to-regexp'
+import { iotxAccountListAttr, productInfoListGet, queryPropertyByProductKey } from '../services/aliyun';
 import base from './common/base'
 // import { stat } from 'fs';
 
@@ -14,6 +15,7 @@ export default modelExtend(base.pageModel, {
     productNodeType: "DEVICE",
     locationPathname: '',
     locationQuery: {},
+    productDetail: {},
   },
   effects: {
     *fetchIotxAccountListAttr({ payload }, { call, put }) {
@@ -68,6 +70,24 @@ export default modelExtend(base.pageModel, {
         throw data
       }
     },
+
+    *fetchProductByProductKey({ payload }, { call, put }) {
+
+      const data = yield call(queryPropertyByProductKey, payload)
+
+      if (data && data.code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            productDetail: data.data,
+          },
+        })
+      } else {
+        debug('error data=%o', data)
+        console.error('error data=', data)
+        throw data
+      }
+    },
   },
   reducers: {
     queryProductSuccess(state, { payload }) {
@@ -81,7 +101,7 @@ export default modelExtend(base.pageModel, {
         },
       }
     },
-    handleProductStatus (state, { payload }) {
+    handleProductStatus(state, { payload }) {
       return {
         ...state,
         productStatus: payload,
@@ -89,6 +109,18 @@ export default modelExtend(base.pageModel, {
     },
   },
   subscriptions: {
+
+    setupProductDetail({ dispatch, history }) {
+      history.listen(({ pathname }) => {
+        const match = pathToRegexp('/aliyun/ProductDetail/:ProductKey').exec(pathname)
+        if (match) {
+          dispatch({
+            type: 'fetchProductByProductKey',
+            payload: match[1],
+          })
+        }
+      })
+    },
 
     // test new subscription
     setupHistory({ dispatch, history }) {

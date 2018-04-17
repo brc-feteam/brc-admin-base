@@ -19,6 +19,11 @@ export async function productInfoListGet(params) {
   return request(`${aliyun}/productInfoListGet?${stringify(params)}`)
 }
 
+// https://linkdevelop.aliyun.com/docCenter#/apiDetail/817/1929
+export async function queryPropertyByProductKey(productKey){
+  return request(`${aliyun}/queryPropertyByProductKey?productKey=${productKey}`)
+}
+
 // export async function getExample(params) {
 //   return request(`/api/get?${stringify(params)}`);
 // }

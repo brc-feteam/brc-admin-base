@@ -1,9 +1,11 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'dva'
-import { routerRedux } from 'dva/router'
-import queryString from 'query-string'
+import { Link } from 'react-router-dom';
+import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
+import queryString from 'query-string';
 // import moment from 'moment';
 import { Table, Card, Radio, Input, Icon, Dropdown, Menu } from 'antd';
+import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 import styles from './ProductList.less';
 
 const RadioButton = Radio.Button;
@@ -103,9 +105,10 @@ class ProductList extends PureComponent {
         "dataIndex": "",
         "key": "x",
         width: 150,
-        render: (item) => <div><a href={`/aliyun/ProductDetail/${item.productKey}`}>查看</a>,  <MoreBtn /></div>,
+        render: (item) => <div><Link to={`/aliyun/ProductDetail/${item.productKey}`}>查看</Link>,  <MoreBtn /></div>,
       },
     ];
+    // <a href={`/aliyun/ProductDetail/${item.productKey}`}>查看</a>
 
     const tableProps = {
       pagination,
@@ -124,22 +127,26 @@ class ProductList extends PureComponent {
     }
 
     return (
-      <div className={styles.standardList}>
-        <Card
-          bordered={false}
-          title="产品接入-模组开发调试产品"
-          style={{ marginTop: 16 }}
-          extra={extraContent}
-        >
-          <Table
-            {...tableProps}
-            bordered
-            columns={columns}
-            simple
-            className={styles.table}
-            rowKey={record => record.productId}
-          />
-          {/* <List
+      <PageHeaderLayout
+        title="产品列表"
+        content="产品设备信息。"
+      >
+        <div className={styles.standardList}>
+          <Card
+            bordered={false}
+            title="产品接入-模组开发调试产品"
+            style={{ marginTop: 16 }}
+            extra={extraContent}
+          >
+            <Table
+              {...tableProps}
+              bordered
+              columns={columns}
+              simple
+              className={styles.table}
+              rowKey={record => record.productId}
+            />
+            {/* <List
             rowKey="id"
             loading={loading.effects['aliyun/fetchProductInfoListGet']}
             pagination={paginationProps}
@@ -157,8 +164,9 @@ class ProductList extends PureComponent {
               </List.Item>
             )}
           /> */}
-        </Card>
-      </div>
+          </Card>
+        </div>
+      </PageHeaderLayout>
     );
   }
 }

@@ -40,6 +40,14 @@ export default modelExtend(base.pageModel, {
     *fetchProductInfoListGet({ payload }, { call, put }) {
       console.info('fetchProductInfoListGet', payload)
 
+      yield put({
+        type: 'updateState',
+        payload: {
+          productStatus: payload.status,
+          productNodeType: payload.nodeType,
+        },
+      })
+
       const data = yield call(productInfoListGet, payload);
 
       if (data && data.code === 200) {
@@ -82,6 +90,7 @@ export default modelExtend(base.pageModel, {
   },
   subscriptions: {
 
+    // test new subscription
     setupHistory({ dispatch, history }) {
       console.log('subscriptions - setupHistory')
 

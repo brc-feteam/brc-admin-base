@@ -22,9 +22,18 @@ class ProductList extends PureComponent {
 
   handleChangeStatus = e => {
     e.preventDefault();
+
+    // const { pageNo, pageSize, status, nodeType } = 
+    const newProps = {
+      "pageNo": this.props.aliyun.pagination.current,
+      "pageSize": this.props.aliyun.pagination.pageSize,
+      "status": e.target.value,
+      "nodeType": this.props.aliyun.productNodeType,
+    }
+
     this.props.dispatch({
-      type: 'aliyun/handleProductStatus',
-      payload: e.target.value,
+      type: 'aliyun/fetchProductInfoListGet',
+      payload: newProps,
     });
   }
 

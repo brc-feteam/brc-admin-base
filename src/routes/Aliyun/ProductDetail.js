@@ -9,6 +9,7 @@ import PageHeaderLayout from '../../layouts/PageHeaderLayout';
     loading: loading.effects['aliyun/fetchProductByProductKey'],
     productDetail: aliyun.productDetail,
     deviceList: aliyun.deviceList,
+    SelectedDevice: aliyun.SelectedDevice,
     dispatch,
 }))
 
@@ -17,36 +18,55 @@ class ProductDetail extends PureComponent {
         size: 'default',
     }
 
-    handleRefresh = (e) => {
-        const { dispatch, productDetail } = this.props;
+    // handleRefresh = (e) => {
+    //     const { dispatch, productDetail } = this.props;
+    //     const params = {
+    //         productKey: productDetail.productKey,
+    //         deviceName: 's7zMqOjD2yA1GcqckXXv',
+    //         propertyIdentifier: 'LightSwitch',
+    //     }
+    //     dispatch({ type: 'aliyun/getThingProperty', payload: params })
+    // }
+
+    // handleSwitch = (e) => {
+    //     console.log(e.target.value);
+    //     const { dispatch, productDetail } = this.props;
+    //     const params = {
+    //         productKey: productDetail.productKey,
+    //         deviceName: 's7zMqOjD2yA1GcqckXXv',
+    //         LightSwitch: 1,
+    //     }
+    //     dispatch({ type: 'aliyun/putThingProperties', payload: params })
+    // }
+
+    handleRadioGroupChange = (identifier, e) => {
+        console.log('handleRadioGroupChange', identifier, e.target.value)
+
+        const {dispatch, SelectedDevice} = this.props;
+        // productKey=a19kxqwXWu7&deviceName=s7zMqOjD2yA1GcqckXXv&LightSwitch=1
         const params = {
-            productKey: productDetail.productKey,
-            deviceName: 's7zMqOjD2yA1GcqckXXv',
-            propertyIdentifier: 'LightSwitch',
-        }
-        dispatch({ type: 'aliyun/getThingProperty', payload: params })
+            productKey: SelectedDevice.productKey,
+            deviceName: SelectedDevice.name,
+        };
+        params[identifier]=e.target.value;
+        
+        dispatch({type:'aliyun/putThingProperties', payload:params})
+        
     }
 
-    handleSwitch = (e) => {
-        // console.log(e.target.value);
+    handleSelectDevice = (item) => {
+        console.warn('handleSelectDevice', item)
         const { dispatch, productDetail } = this.props;
         const params = {
-            productKey: productDetail.productKey,
-            deviceName: 's7zMqOjD2yA1GcqckXXv',
-            LightSwitch: 1,
-        }
-        dispatch({ type: 'aliyun/setThingProperties', payload: params })
-    }
+            SelectedDevice: item,
+            productDetail,
+        };
 
-    handleRadioGroupChange (e) {
-        console.log(e.target.value)
-        // this.setState({
-        //   type: e.target.value,
-        // })
-      }
+        dispatch({ type: 'aliyun/fetchThingProperty', payload: params})
+    }
 
     render() {
-        const { size, productDetail, deviceList } = this.props;
+        const { size, productDetail, deviceList, SelectedDevice } = this.props;
         // deviceKey:"q7Grsrl0XuazUyn4AwmN"
         // deviceSecret:"5pWJ62kr4YkM2E1V8FGubseNR2Xxiz2g"
         // gmtCreate:"2018-04-13 17:13:00"
@@ -84,28 +104,26 @@ class ProductDetail extends PureComponent {
             dataIndex: 'operation',
             render: (text, record) => {
               return (
-                <a href="javascript:;">查看</a>
+                <Button onClick={e => this.handleSelectDevice(record, e)}>查看</Button>
               );
             },
           }];
 
-        const UIDeviceList = () => (<Table dataSource={deviceList} columns={columns} rowKey={record => record.iotId} />);
+        const UIDeviceList = () => (
+          <Table dataSource={deviceList} columns={columns} rowKey={record => record.iotId} />
+        );
 
         const RadioGroup = Radio.Group;
 
-        const UIDataSpecsList = ({data: {dataSpecsList,dataSpecs}}) => (
+        const UIDataSpecsList = ({data: {dataSpecsList, dataSpecs, value, ...rest}}) => (
           <div>
             { dataSpecsList?  (
               <div>
-                <RadioGroup options={dataSpecsList.map(o=>{return {label:o.name, value:o.value}})} onChange={this.handleRadioGroupChange.bind(this)} />
-                {/* <List
-                  rowKey="id"
-                  style={{ marginTop: 5 }}
-                  grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
-                  dataSource={dataSpecsList}
-                  renderItem={(item) => (
-                    <span>{item.name}</span>
-                )}/> */}
+                <RadioGroup 
+                  defaultValue={value} 
+                  options={dataSpecsList.map(o=>{return {label:o.name, value:o.value}})}
+                  onChange={e=>this.handleRadioGroupChange(rest.identifier,e)}
+                />
               </div>) : (<span>{dataSpecs.dataType},{dataSpecs.unitName},{dataSpecs.min},{dataSpecs.max}</span>)
             }
           </div>
@@ -125,7 +143,9 @@ class ProductDetail extends PureComponent {
                         
                         <UIDataSpecsList data={item} />
 
-                        <Button type="primary" size={size} onClick={this.handleSwitch}>切换</Button>
+                        {/* <span>当前状态值: {item.value}</span> */}
+
+                        {/* <Button type="primary" size={size} onClick={this.handleSwitch}>切换</Button> */}
                       </Card>
                     </List.Item>
               )}
@@ -147,7 +167,7 @@ class ProductDetail extends PureComponent {
                 </Col>
               </Row>
 
-              <h2 style={{ margin: '16px 0' }}>设备运行状态</h2>
+              <h2 style={{ margin: '16px 0' }}>设备运行状态 - {SelectedDevice.name}</h2>
               <div style={{ background: '#ECECEC', padding: '30px' }}>
                 <UIDevicePropertyList />
               </div>

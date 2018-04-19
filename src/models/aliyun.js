@@ -18,8 +18,12 @@ export default modelExtend(base.pageModel, {
     productDetail: {},
     deviceState: true,
     deviceList: [],
+    SelectedDevice: {},
   },
   effects: {
+    /*
+    CRUD:  fetch,put,remove,new
+    */
     *fetchIotxAccountListAttr({ payload }, { call, put }) {
       const data = yield call(iotxAccountListAttr, payload);
       if (data && data.code === 200) {
@@ -113,8 +117,8 @@ export default modelExtend(base.pageModel, {
       }
     },
 
-    *getThingProperty({ payload }, { call, put }) {
-      const data = yield call(getThingProperty, payload);
+    *putThingProperties({ payload }, { call, put }) {
+      const data = yield call(setThingProperties, payload);
       if (data && data.code === 200) {
         yield put({
           type: 'updateState',
@@ -129,20 +133,31 @@ export default modelExtend(base.pageModel, {
       }
     },
 
-    *setThingProperties({ payload }, { call, put }) {
-      const data = yield call(setThingProperties, payload);
-      if (data && data.code === 200) {
-        yield put({
-          type: 'updateState',
-          payload: {
-            deviceState: data.data,
-          },
-        })
-      } else {
-        debug('error data=%o', data)
-        console.error('error data=', data)
-        throw data
+    *fetchThingProperty({ payload }, { call, put }) {
+      const { SelectedDevice, productDetail } = payload
+      const statusProperty = [];
+      for (let i = 0; i < productDetail.length; i += 1) {
+        const o = productDetail[i];
+        const data = yield call(getThingProperty, {
+          productKey: SelectedDevice.productKey,
+          deviceName: SelectedDevice.name,
+          propertyIdentifier: o.identifier,
+        });
+        if (data && data.code === 200) {
+          statusProperty.push(data.data)
+        }
       }
+
+      yield put({
+        type: 'handleSelectDevice',
+        payload: SelectedDevice,
+      })
+
+      yield put({
+        type: 'patchDeviceStatus',
+        payload: statusProperty,
+      })
+
     },
   },
   reducers: {
@@ -161,6 +176,24 @@ export default modelExtend(base.pageModel, {
       return {
         ...state,
         productStatus: payload,
+      }
+    },
+    handleSelectDevice(state, { payload }) {
+      return {
+        ...state,
+        SelectedDevice: payload,
+      }
+    },
+    patchDeviceStatus(state, { payload: statusProperty }) {
+      const { productDetail } = state;
+      const newList = [];
+      productDetail.forEach(r => {
+        const item = statusProperty.find(o => { return o.attribute === r.identifier })
+        newList.push(Object.assign({}, r, item))
+      });
+      return {
+        ...state,
+        productDetail: newList,
       }
     },
   },

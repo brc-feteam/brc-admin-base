@@ -1,7 +1,7 @@
 import modelExtend from 'dva-model-extend'
 import queryString from 'query-string'
 import pathToRegexp from 'path-to-regexp'
-import { iotxAccountListAttr, productInfoListGet, queryPropertyByProductKey } from '../services/aliyun';
+import { iotxAccountListAttr, productInfoListGet, queryPropertyByProductKey, setThingProperties, getThingProperty, queryDeviceByProductKey } from '../services/aliyun';
 import base from './common/base'
 // import { stat } from 'fs';
 
@@ -16,6 +16,8 @@ export default modelExtend(base.pageModel, {
     locationPathname: '',
     locationQuery: {},
     productDetail: {},
+    deviceState: true,
+    deviceList: [],
   },
   effects: {
     *fetchIotxAccountListAttr({ payload }, { call, put }) {
@@ -80,6 +82,60 @@ export default modelExtend(base.pageModel, {
           type: 'updateState',
           payload: {
             productDetail: data.data,
+          },
+        })
+
+        yield put({
+          type: 'fetchDeviceByProductKey',
+          payload: { productKey: 'a19kxqwXWu7', offset: 1, pageSize: 10 },
+        })
+
+      } else {
+        debug('error data=%o', data)
+        console.error('error data=', data)
+        throw data
+      }
+    },
+
+    *fetchDeviceByProductKey({ payload }, { call, put }) {
+      const data = yield call(queryDeviceByProductKey, payload);
+      if (data && data.code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            deviceList: data.data.items,  // totalNum
+          },
+        })
+      } else {
+        debug('error data=%o', data)
+        console.error('error data=', data)
+        throw data
+      }
+    },
+
+    *getThingProperty({ payload }, { call, put }) {
+      const data = yield call(getThingProperty, payload);
+      if (data && data.code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            deviceState: data.data,
+          },
+        })
+      } else {
+        debug('error data=%o', data)
+        console.error('error data=', data)
+        throw data
+      }
+    },
+
+    *setThingProperties({ payload }, { call, put }) {
+      const data = yield call(setThingProperties, payload);
+      if (data && data.code === 200) {
+        yield put({
+          type: 'updateState',
+          payload: {
+            deviceState: data.data,
           },
         })
       } else {

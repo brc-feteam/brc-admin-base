@@ -24,6 +24,18 @@ export async function queryPropertyByProductKey(productKey){
   return request(`${aliyun}/queryPropertyByProductKey?productKey=${productKey}`)
 }
 
+export async function setThingProperties(params){
+  return request(`${aliyun}/setThingProperties?${stringify(params)}`)
+}
+
+export async function getThingProperty(params) {
+  return request(`${aliyun}/getThingProperty?${stringify(params)}`)
+}
+
+export async function queryDeviceByProductKey(params) {
+  return request(`${aliyun}/queryDeviceByProductKey?${stringify(params)}`)
+}
+
 // export async function getExample(params) {
 //   return request(`/api/get?${stringify(params)}`);
 // }

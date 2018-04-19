@@ -1,50 +1,165 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva'
-import { Row, Col, Card, Table, Button } from 'antd';
+import { Row, Col, Card, List, Table, Button, Radio } from 'antd';
 // import { routerRedux } from 'dva/router'
 // import queryString from 'query-string'
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
-@connect(({ aliyun, loading }) => ({
+@connect(({ aliyun, loading, dispatch }) => ({
     loading: loading.effects['aliyun/fetchProductByProductKey'],
     productDetail: aliyun.productDetail,
+    deviceList: aliyun.deviceList,
+    dispatch,
 }))
 
 class ProductDetail extends PureComponent {
     static defaultProps = {
         size: 'default',
     }
-    
-    render() {
-        const { size } = this.props;
 
-        const productDetail = this.props.productDetail;
+    handleRefresh = (e) => {
+        const { dispatch, productDetail } = this.props;
+        const params = {
+            productKey: productDetail.productKey,
+            deviceName: 's7zMqOjD2yA1GcqckXXv',
+            propertyIdentifier: 'LightSwitch',
+        }
+        dispatch({ type: 'aliyun/getThingProperty', payload: params })
+    }
+
+    handleSwitch = (e) => {
+        // console.log(e.target.value);
+        const { dispatch, productDetail } = this.props;
+        const params = {
+            productKey: productDetail.productKey,
+            deviceName: 's7zMqOjD2yA1GcqckXXv',
+            LightSwitch: 1,
+        }
+        dispatch({ type: 'aliyun/setThingProperties', payload: params })
+    }
+
+    handleRadioGroupChange (e) {
+        console.log(e.target.value)
+        // this.setState({
+        //   type: e.target.value,
+        // })
+      }
+
+    render() {
+        const { size, productDetail, deviceList } = this.props;
+        // deviceKey:"q7Grsrl0XuazUyn4AwmN"
+        // deviceSecret:"5pWJ62kr4YkM2E1V8FGubseNR2Xxiz2g"
+        // gmtCreate:"2018-04-13 17:13:00"
+        // gmtModified:"2018-04-13 17:13:00"
+        // iotId:"q7Grsrl0XuazUyn4AwmN0010a8b700"
+        // name:"bro-l-001"
+        // productKey:"a19kxqwXWu7"
+        // rbacTenantId:"4AE1852DA9884731A4AAE64D6636CD3E"
+        // region:"cn-shanghai"
+        // status:0         // [0:'未激活', 1:'',2:'',3:'离线']
+        // statusLast:0
+        // thingType:"DEVICE"
+        const columns = [{
+            title: 'DeviceName',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: '状态',
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
+            title: '类型',
+            dataIndex: 'thingType',
+            key: 'thingType',
+        },
+        {
+            title: '创建日期',
+            dataIndex: 'gmtCreate',
+            key: 'gmtCreate',
+        },
+        {
+            title: '操作',
+            dataIndex: 'operation',
+            render: (text, record) => {
+              return (
+                <a href="javascript:;">查看</a>
+              );
+            },
+          }];
+
+        const UIDeviceList = () => (<Table dataSource={deviceList} columns={columns} rowKey={record => record.iotId} />);
+
+        const RadioGroup = Radio.Group;
+
+        const UIDataSpecsList = ({data: {dataSpecsList,dataSpecs}}) => (
+          <div>
+            { dataSpecsList?  (
+              <div>
+                <RadioGroup options={dataSpecsList.map(o=>{return {label:o.name, value:o.value}})} onChange={this.handleRadioGroupChange.bind(this)} />
+                {/* <List
+                  rowKey="id"
+                  style={{ marginTop: 5 }}
+                  grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
+                  dataSource={dataSpecsList}
+                  renderItem={(item) => (
+                    <span>{item.name}</span>
+                )}/> */}
+              </div>) : (<span>{dataSpecs.dataType},{dataSpecs.unitName},{dataSpecs.min},{dataSpecs.max}</span>)
+            }
+          </div>
+          
+        );
+
+        const UIDevicePropertyList = ()=>(
+          <List
+            rowKey="propertyId"
+            style={{ marginTop: 24 }}
+            grid={{ gutter: 24, xl: 4, lg: 3, md: 3, sm: 2, xs: 1 }}
+            dataSource={productDetail}
+            renderItem={
+                  (item) => (
+                    <List.Item key={item.propertyId}>
+                      <Card title={item.name} bordered={false}>
+                        
+                        <UIDataSpecsList data={item} />
+
+                        <Button type="primary" size={size} onClick={this.handleSwitch}>切换</Button>
+                      </Card>
+                    </List.Item>
+              )}
+          />);
+
         return (
           <PageHeaderLayout
             title="产品设备"
             content="产品设备信息。"
           >
             <div className="content-inner">
-              <h2 style={{ margin: '16px 0' }}>设备属性</h2>
+
+              <h2 style={{ margin: '16px 0' }} />
               <Row gutter={32}>
                 <Col>
-                  <Card title="默认">
+                  <Card title="设备列表">
+                    <UIDeviceList />
+                  </Card>
+                </Col>
+              </Row>
+
+              <h2 style={{ margin: '16px 0' }}>设备运行状态</h2>
+              <div style={{ background: '#ECECEC', padding: '30px' }}>
+                <UIDevicePropertyList />
+              </div>
+
+              <h2 style={{ margin: '16px 0' }} />
+              <Row gutter={32}>
+                <Col>
+                  <Card title="设备属性字典">
                     <div>返回JSON数据：{JSON.stringify(productDetail)}</div>
                   </Card>
                 </Col>
               </Row>
-              <h2 style={{ margin: '16px 0' }}>设备属性状态</h2>
-              <div style={{ background: '#ECECEC', padding: '30px' }}>
-                <Row gutter={16}>
-                  <Col span={6}>
-                    <Card title="主灯开关" bordered={false}>
-                      <div>关闭／开启</div>
-                      <div>2018-04-12 17:21:24</div>
-                      <Button type="primary" size={size}>切换</Button>
-                    </Card>
-                  </Col>
-                </Row>
-              </div>
             </div>
           </PageHeaderLayout>
         )

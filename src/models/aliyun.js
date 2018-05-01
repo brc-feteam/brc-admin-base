@@ -79,7 +79,8 @@ export default modelExtend(base.pageModel, {
 
     *fetchProductByProductKey({ payload }, { call, put }) {
 
-      const data = yield call(queryPropertyByProductKey, payload)
+      const { productKey, page, pageSize } = payload
+      const data = yield call(queryPropertyByProductKey, productKey)
 
       if (data && data.code === 200) {
         yield put({
@@ -91,7 +92,7 @@ export default modelExtend(base.pageModel, {
 
         yield put({
           type: 'fetchDeviceByProductKey',
-          payload: { productKey: 'a19kxqwXWu7', offset: 1, pageSize: 10 },
+          payload: { productKey, page, pageSize },
         })
 
       } else {
@@ -102,12 +103,25 @@ export default modelExtend(base.pageModel, {
     },
 
     *fetchDeviceByProductKey({ payload }, { call, put }) {
-      const data = yield call(queryDeviceByProductKey, payload);
+      const { productKey, page, pageSize } = payload
+      const data = yield call(queryDeviceByProductKey, {
+        productKey,
+        page,
+        pageSize,
+      });
       if (data && data.code === 200) {
+
+        const result = data.data
+
         yield put({
           type: 'updateState',
           payload: {
-            deviceList: data.data.items,  // totalNum
+            deviceList: result.items,
+            pagination: {
+              current: Number(payload.page) || 1,
+              pageSize: Number(payload.pageSize) || 10,
+              total: result.totalNum || result.items.length,
+            },
           },
         })
       } else {
@@ -117,8 +131,12 @@ export default modelExtend(base.pageModel, {
       }
     },
 
-    *putThingProperties({ payload }, { call, put }) {
-      const data = yield call(setThingProperties, payload);
+    *putThingProperties({ payload }, { call, put, ...rest }) {
+      console.log('model effets putThingProperties ', payload, rest)
+      const {SelectedDevice, productDetail, ...restpayload} = payload 
+      
+      const data = yield call(setThingProperties, restpayload);
+
       if (data && data.code === 200) {
         yield put({
           type: 'updateState',
@@ -126,9 +144,18 @@ export default modelExtend(base.pageModel, {
             deviceState: data.data,
           },
         })
+
+        yield put({
+          type: 'fetchThingProperty',
+          payload: {
+            SelectedDevice, 
+            productDetail,
+          },
+        })
+
       } else {
-        debug('error data=%o', data)
-        console.error('error data=', data)
+        // debug('error data=%o', data)
+        // console.error('error data=', data)
         throw data
       }
     },
@@ -205,8 +232,13 @@ export default modelExtend(base.pageModel, {
         if (match) {
           dispatch({
             type: 'fetchProductByProductKey',
-            payload: match[1],
+            payload: {
+              productKey: match[1],
+              ...queryString.parse(location.search),
+            },
           })
+        } else {
+          console.error('page error, no productKey')
         }
       })
     },

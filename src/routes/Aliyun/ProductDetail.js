@@ -1,16 +1,19 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva'
-import { Row, Col, Card, List, Table, Button, Radio } from 'antd';
-// import { routerRedux } from 'dva/router'
-// import queryString from 'query-string'
+import { routerRedux } from 'dva/router'
+import { Row, Col, Card, List, Table, Button, Radio, Slider, notification } from 'antd';
+import moment from "moment";
+import queryString from 'query-string'
 import PageHeaderLayout from '../../layouts/PageHeaderLayout';
 
 @connect(({ aliyun, loading, dispatch }) => ({
-    loading: loading.effects['aliyun/fetchProductByProductKey'],
+    loadingProduct: loading.effects['aliyun/fetchProductByProductKey'],
     productDetail: aliyun.productDetail,
     deviceList: aliyun.deviceList,
     SelectedDevice: aliyun.SelectedDevice,
+    pagination: aliyun.pagination,
     dispatch,
+    loading,
 }))
 
 class ProductDetail extends PureComponent {
@@ -39,34 +42,50 @@ class ProductDetail extends PureComponent {
     //     dispatch({ type: 'aliyun/putThingProperties', payload: params })
     // }
 
-    handleRadioGroupChange = (identifier, e) => {
-        console.log('handleRadioGroupChange', identifier, e.target.value)
-
-        const {dispatch, SelectedDevice} = this.props;
+    handleChangeDeviceProperty = (identifier, e) => {
+        const {dispatch, SelectedDevice,productDetail} = this.props;
+        if(!SelectedDevice.productKey){
+          
+          notification.error({
+            message: `请求错误 productKey needed`,
+            description: '请求错误， 请先选择设备',
+          });
+          return
+        }
         // productKey=a19kxqwXWu7&deviceName=s7zMqOjD2yA1GcqckXXv&LightSwitch=1
         const params = {
             productKey: SelectedDevice.productKey,
             deviceName: SelectedDevice.name,
+            SelectedDevice,
+            productDetail,
         };
-        params[identifier]=e.target.value;
-        
-        dispatch({type:'aliyun/putThingProperties', payload:params})
-        
+        params[identifier] = e.target ? e.target.value : e;
+        try {
+          dispatch({type:'aliyun/putThingProperties', payload:params});
+        } catch (error) {
+          notification.error({
+            message: `请求错误`,
+            description: error.message,
+          });
+        }
+        console.log('handleChangeDeviceProperty', identifier, params[identifier]);
     }
 
     handleSelectDevice = (item) => {
-        console.warn('handleSelectDevice', item)
         const { dispatch, productDetail } = this.props;
         const params = {
             SelectedDevice: item,
             productDetail,
         };
-
         dispatch({ type: 'aliyun/fetchThingProperty', payload: params})
     }
 
     render() {
-        const { size, productDetail, deviceList, SelectedDevice } = this.props;
+        const { dispatch, loading, productDetail, deviceList, SelectedDevice,pagination, location } = this.props;
+
+        location.query = queryString.parse(location.search)
+        const { query, pathname } = location
+
         // deviceKey:"q7Grsrl0XuazUyn4AwmN"
         // deviceSecret:"5pWJ62kr4YkM2E1V8FGubseNR2Xxiz2g"
         // gmtCreate:"2018-04-13 17:13:00"
@@ -98,6 +117,9 @@ class ProductDetail extends PureComponent {
             title: '创建日期',
             dataIndex: 'gmtCreate',
             key: 'gmtCreate',
+            render: (text) => {
+              return (moment(text).format('YYYY-MM-DD hh:mm:ss'))
+            },
         },
         {
             title: '操作',
@@ -109,22 +131,66 @@ class ProductDetail extends PureComponent {
             },
           }];
 
+        const tableProps = {
+          pagination,
+          columns,
+          dataSource: deviceList,
+          loading: loading.effects['aliyun/fetchDeviceByProductKey'],
+          onChange(page) {
+            dispatch(routerRedux.push({
+              pathname,
+              search: queryString.stringify({
+                ...query,
+                page: page.current,
+                pageSize: page.pageSize,
+              }),
+            }))
+          },
+        }
+
         const UIDeviceList = () => (
-          <Table dataSource={deviceList} columns={columns} rowKey={record => record.iotId} />
+          <Table {...tableProps} rowKey={record => record.iotId} />
         );
 
         const RadioGroup = Radio.Group;
 
+        function formatter(value) {
+          return `${value}%`;
+        }
+
+        const sliderMarks = {
+          0: '0%',
+          100: {
+            style: {
+              color: '#f50',
+            },
+            label: <strong>100%</strong>,
+          },
+        };
+
         const UIDataSpecsList = ({data: {dataSpecsList, dataSpecs, value, ...rest}}) => (
           <div>
-            { dataSpecsList?  (
+            { dataSpecsList ?  (
               <div>
                 <RadioGroup 
                   defaultValue={value} 
                   options={dataSpecsList.map(o=>{return {label:o.name, value:o.value}})}
-                  onChange={e=>this.handleRadioGroupChange(rest.identifier,e)}
+                  onChange={e=>this.handleChangeDeviceProperty(rest.identifier,e)}
                 />
-              </div>) : (<span>{dataSpecs.dataType},{dataSpecs.unitName},{dataSpecs.min},{dataSpecs.max}</span>)
+              </div>) : (
+                dataSpecs.unit==='%' ?
+                (
+                  <div>
+                    <Slider 
+                      tipFormatter={formatter} 
+                      marks={sliderMarks} 
+                      value={value}
+                      onChange={newValue=>this.handleChangeDeviceProperty(rest.identifier,newValue)}
+                    />
+                  </div>): (
+                    <div>
+                      {dataSpecs.dataType},{dataSpecs.unitName},{dataSpecs.min},{dataSpecs.max}
+                    </div>))
             }
           </div>
           

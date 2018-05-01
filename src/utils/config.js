@@ -5,7 +5,7 @@ module.exports = {
   name: 'IOT-管理平台',
   prefix: 'brcIotAdmin',
   footerText: 'BRC Admin  © 2018 taoqianbao',
-  logo: '/assets/logo.svg',
+  logo: '/assets/brc-logo.png',
   CORS: [],
   apiPrefix: '/api/v1',
   APIV1,

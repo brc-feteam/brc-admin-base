@@ -12,12 +12,7 @@ export default {
   //     "target": "http://127.0.0.1:7001/",
   //     "changeOrigin": true,
   //     "pathRewrite": { "^/api/v2": "/" }
-  //   },
-  //   "/api/v3": {
-  //     "target": "http://127.0.0.1:7001/",
-  //     "changeOrigin": true,
-  //     "pathRewrite": { "^/api/v3": "/api" }
-  //   }
+  //   },s
   // },
   dllPlugin: {
     exclude: ["babel-runtime", "roadhog", "cross-env"],

@@ -1,9 +1,9 @@
 import { routerRedux } from 'dva/router';
 import { message } from 'antd';
-import { fakeAccountLogin, fakeAccountLogin2 } from '../services/api';
+import { fakeAccountLogin } from '../services/api'; // fakeAccountLogin2
 import { setAuthority } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
-import config from '../components/Exception/typeConfig';
+// import config from '../components/Exception/typeConfig';
 
 function loopTreeData(data, pid) {
   let result = [], temp;

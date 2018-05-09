@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react';
 import moment from 'moment';
+// eslint-disable-next-line
 import { List, Card, Row, Col, Radio, Input, Progress, Button, Icon, Dropdown, Menu, Avatar } from 'antd';
 
 import styles from './BasicList.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
-const Search = Input.Search;
+const { Search } = Input;   // prefer-destructing const Search = Input.Search;
 
 function fakeList(count) {
   const titles = [
@@ -103,7 +104,7 @@ class BasicList extends PureComponent {
     list: {
       list: fakeList(10),
       loading: false,
-    }
+    },
   }
   render() {
     const { list: { list, loading } } = this.props;
@@ -182,16 +183,16 @@ class BasicList extends PureComponent {
             pagination={paginationProps}
             dataSource={list}
             renderItem={item => (
-                <List.Item
-                  actions={[<a>Edit</a>, <MoreBtn />]}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.logo} shape="square" size="large" />}
-                    title={<a href={item.href}>{item.title}</a>}
-                    description={item.subDescription}
-                  />
-                  <ListContent data={item} />
-                </List.Item>
+              <List.Item
+                actions={[<a>Edit</a>, <MoreBtn />]}
+              >
+                <List.Item.Meta
+                  avatar={<Avatar src={item.logo} shape="square" size="large" />}
+                  title={<a href={item.href}>{item.title}</a>}
+                  description={item.subDescription}
+                />
+                <ListContent data={item} />
+              </List.Item>
               )}
           />
         </Card>

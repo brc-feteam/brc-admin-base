@@ -7,13 +7,15 @@ const { RangePicker } = DatePicker;
 
 @Form.create()
 class BasicForms extends PureComponent {
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
+      // eslint-disable-line
       if (!err) {
+        // eslint-disable-line
       }
     });
-  }
+  };
   render() {
     const { submitting } = this.props;
     const { getFieldDecorator } = this.props.form;
@@ -41,15 +43,14 @@ class BasicForms extends PureComponent {
       <div>
         <Card bordered={false}>
           <Form onSubmit={this.handleSubmit} hideRequiredMark style={{ marginTop: 24 }}>
-            <FormItem
-              {...formItemLayout}
-              label="App Type"
-              hasFeedback
-            >
+            <FormItem {...formItemLayout} label="App Type" hasFeedback>
               {getFieldDecorator('appType', {
-                rules: [{
-                  required: true, message: 'application type is required',
-                }],
+                rules: [
+                  {
+                    required: true,
+                    message: 'application type is required',
+                  },
+                ],
               })(
                 <Select placeholder="app type">
                   <Option value="type1">angular</Option>
@@ -58,37 +59,25 @@ class BasicForms extends PureComponent {
                 </Select>
               )}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="Product Name"
-              hasFeedback
-            >
+            <FormItem {...formItemLayout} label="Product Name" hasFeedback>
               {getFieldDecorator('productName', {
-                rules: [{
-                  required: true, message: 'product name is required',
-                }],
-              })(
-                <Input placeholder="product name" />
-              )}
+                rules: [
+                  {
+                    required: true,
+                    message: 'product name is required',
+                  },
+                ],
+              })(<Input placeholder="product name" />)}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="App Name"
-              hasFeedback
-            >
+            <FormItem {...formItemLayout} label="App Name" hasFeedback>
               {getFieldDecorator('appName', {
                 rules: [
                   { required: true, message: 'app name is required' },
                   { pattern: /^[a-zA-Z0-9-]+$/, message: 'only english, number and _' },
                 ],
-              })(
-                <Input placeholder="only english, number and _" />
-              )}
+              })(<Input placeholder="only english, number and _" />)}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="Date"
-            >
+            <FormItem {...formItemLayout} label="Date">
               {getFieldDecorator('dateRange', {
                 rules: [{ type: 'array', required: true, message: 'date is required' }],
               })(
@@ -99,14 +88,16 @@ class BasicForms extends PureComponent {
                 />
               )}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              label="domain"
-            >
+            <FormItem {...formItemLayout} label="domain">
               {getFieldDecorator('domain', {
                 rules: [{ required: true, message: 'domain is required' }],
               })(
-                <Input addonBefore="http://" addonAfter=".com" placeholder="facebook" style={{ width: '100%' }} />
+                <Input
+                  addonBefore="http://"
+                  addonAfter=".com"
+                  placeholder="facebook"
+                  style={{ width: '100%' }}
+                />
               )}
             </FormItem>
             <FormItem {...submitFormLayout} style={{ marginTop: 40 }}>

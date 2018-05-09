@@ -6,19 +6,21 @@ import { reloadAuthorized } from '../utils/Authorized';
 // import config from '../components/Exception/typeConfig';
 
 function loopTreeData(data, pid) {
-  let result = [], temp;
-  for (let i = 0; i < data.length; i++) {
+  let result = [],
+    temp; // eslint-disable-line
+  for (let i = 0; i < data.length; i += 1) {
     if (data[i].pmenuId === pid) {
       const obj = {
-        "id": data[i].menuId,
-        "pid": data[i].pmenuId,
-        "title": data[i].name,
-        "key": data[i].menuKey,
-        "tag": data[i].tag,
-        "to": data[i].tourl,
+        id: data[i].menuId,
+        pid: data[i].pmenuId,
+        title: data[i].name,
+        key: data[i].menuKey,
+        tag: data[i].tag,
+        to: data[i].tourl,
       };
       temp = loopTreeData(data, data[i].menuId);
       if (temp != undefined) {
+        // eslint-disable-line
         if (temp.length > 0) {
           obj.subs = temp;
         } else {
@@ -61,10 +63,10 @@ export default {
 
         yield put(routerRedux.push('/'));
       } else {
-        message.info("用户密码错误");
+        message.info('用户密码错误');
       }
       // Login successfully - API1
-      // if (response.status === 'ok') {  
+      // if (response.status === 'ok') {
       //   reloadAuthorized();
       //   yield put(routerRedux.push('/'));
       // }

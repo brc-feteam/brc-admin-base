@@ -67,6 +67,13 @@ export async function fakeAccountLogin(params) {
   });
 }
 
+export async function fakeAccountLogin2(params) {
+  return request('/api/v3/auth/login', {
+    method: 'POST',
+    body: params,
+  })
+}
+
 export async function fakeRegister(params) {
   return request('/api/register', {
     method: 'POST',

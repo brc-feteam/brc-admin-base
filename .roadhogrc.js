@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('path');
 
 export default {
   // 接口代理示例
@@ -12,11 +12,28 @@ export default {
   //     "target": "http://127.0.0.1:7001/",
   //     "changeOrigin": true,
   //     "pathRewrite": { "^/api/v2": "/" }
-  //   },s
+  //   },
   // },
+  proxy: {
+    '/api/v1/weather': {
+      target: 'https://api.seniverse.com/',
+      changeOrigin: true,
+      pathRewrite: { '^/api/v1/weather': '/v3/weather' },
+    },
+    '/api/v2': {
+      target: 'http://127.0.0.1:7001/',
+      changeOrigin: true,
+      pathRewrite: { '^/api/v2': '' },
+    },
+    '/api/v3': {
+      target: 'http://127.0.0.1:7001/',
+      changeOrigin: true,
+      pathRewrite: { '^/api/v3': '/api' },
+    },
+  },
   dllPlugin: {
-    exclude: ["babel-runtime", "roadhog", "cross-env"],
-    include: ["dva/router", "dva/saga", "dva/fetch"]
+    exclude: ['babel-runtime', 'roadhog', 'cross-env'],
+    include: ['dva/router', 'dva/saga', 'dva/fetch'],
   },
   env: {
     development: {
@@ -33,14 +50,15 @@ export default {
     },
     production: {
       extraBabelPlugins: [
-        "transform-runtime",
+        'transform-runtime',
         [
-          "import", {
-            "libraryName": "antd",
-            "style": true
-          }
-        ]
-      ]
-    }
+          'import',
+          {
+            libraryName: 'antd',
+            style: true,
+          },
+        ],
+      ],
+    },
   },
-}
+};

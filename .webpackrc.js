@@ -19,7 +19,14 @@ export default {
   html: {
     template: './src/index.ejs',
   },
-  disableDynamicImport: true,
+  disableDynamicImport: false,
   publicPath: '/',
-  hash: true
+  hash: true,
+  //使用外链
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    '@antv/data-set': 'DataSet',
+    '@antv/g2': 'G2',
+  },
 };

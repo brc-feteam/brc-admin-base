@@ -45,8 +45,16 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
+  // 使用 express-session 时，浏览器端无法写入cookie的原因是：
+  // 请求头设置模式为跨域，此处存在两个错误：
+  // 1、开发模式下应该为跨域模式，而生产模式应该为同域模式
+  // 2、开发模式下的跨越模式如果要写入 cookie 需要配置 credentials: 'include' 属性
   const defaultOptions = {
+    // mode: 'cors',
     credentials: 'include',
+    // headers: {
+    //   'Content-Type': 'application/json',
+    // },
   };
   const newOptions = { ...defaultOptions, ...options };
   if (newOptions.method === 'POST' || newOptions.method === 'PUT') {

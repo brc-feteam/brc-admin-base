@@ -220,7 +220,7 @@ export default class SearchList extends Component {
                     <span>
                       <Tag>Ant Design</Tag>
                       <Tag>设计语言</Tag>
-                      <Tag>蚂蚁金服</Tag>
+                      <Tag>蓝光科技</Tag>
                     </span>
                   }
                 />

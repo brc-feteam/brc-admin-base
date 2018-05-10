@@ -1,41 +1,43 @@
-import React from 'react'
+import React from 'react';
 // import PropTypes from 'prop-types'
-import { connect } from 'dva'
-import { routerRedux } from 'dva/router'
-import { Button } from 'antd'
-import queryString from 'query-string'
+import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
+import { Button } from 'antd';
+import queryString from 'query-string';
 
-import List from 'components/Aliyun/List'
+import List from 'components/Aliyun/List';
 
-const AccountList = ({
-  aliyun, dispatch, loading, location,
-}) => {
-  const { list, pagination } = aliyun
-  location.query = queryString.parse(location.search)
-  const { query, pathname } = location
+const AccountList = ({ aliyun, dispatch, loading, location }) => {
+  const { list, pagination } = aliyun;
+  // eslint-disable-next-line
+  location.query = queryString.parse(location.search);
+  const { query, pathname } = location;
 
   const listProps = {
     pagination,
     dataSource: list,
     loading: loading.effects['aliyun/fetchIotxAccountListAttr'],
     onChange(page) {
-      dispatch(routerRedux.push({
-        pathname,
-        search: queryString.stringify({
-          ...query,
-          page: page.current,
-          pageSize: page.pageSize,
-        }),
-      }))
+      dispatch(
+        routerRedux.push({
+          pathname,
+          search: queryString.stringify({
+            ...query,
+            page: page.current,
+            pageSize: page.pageSize,
+          }),
+        })
+      );
     },
-  }
+  };
 
   return (
-    <div><Button type="primary">查询</Button>
+    <div>
+      <Button type="primary">查询</Button>
       <List {...listProps} />
     </div>
-  )
-}
+  );
+};
 
 // AccountList.propTypes = {
 //   aliyun: PropTypes.object,
@@ -44,4 +46,4 @@ const AccountList = ({
 //   location: PropTypes.object,
 // }
 
-export default connect(({ aliyun, loading }) => ({ aliyun, loading }))(AccountList)
+export default connect(({ aliyun, loading }) => ({ aliyun, loading }))(AccountList);

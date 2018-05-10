@@ -10,37 +10,40 @@ import styles from './ProductList.less';
 
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
-const Search = Input.Search;
+const { Search } = Input;
 
 @connect(({ aliyun, loading }) => ({
   aliyun,
   loading: loading.effects['aliyun/fetchProductInfoListGet'],
   productNodeType: aliyun.productNodeType,
 }))
-
 class ProductList extends PureComponent {
-  static defaultProps = {
-  }
+  static defaultProps = {};
 
   handleChangeStatus = e => {
     e.preventDefault();
 
-    // const { pageNo, pageSize, status, nodeType } = 
+    // const { pageNo, pageSize, status, nodeType } =
     const newProps = {
-      "pageNo": this.props.aliyun.pagination.current,
-      "pageSize": this.props.aliyun.pagination.pageSize,
-      "status": e.target.value,
-      "nodeType": this.props.aliyun.productNodeType,
-    }
+      pageNo: this.props.aliyun.pagination.current,
+      pageSize: this.props.aliyun.pagination.pageSize,
+      status: e.target.value,
+      nodeType: this.props.aliyun.productNodeType,
+    };
 
     this.props.dispatch({
       type: 'aliyun/fetchProductInfoListGet',
       payload: newProps,
     });
-  }
+  };
 
   render() {
-    const { aliyun: { productInfoList, pagination, productStatus }, loading, dispatch, location } = this.props;
+    const {
+      aliyun: { productInfoList, pagination, productStatus },
+      loading,
+      dispatch,
+      location,
+    } = this.props;
     const { query, pathname } = location;
     const extraContent = (
       <div className={styles.extraContent}>
@@ -76,12 +79,12 @@ class ProductList extends PureComponent {
     );
 
     const columns = [
-      { "title": "产品名称", "dataIndex": "name" },
-      { "title": "产品型号", "dataIndex": "", render: () => <span>-</span>, width: 100 },
-      { "title": "productKey", "dataIndex": "productKey", width: 140 },
-      { "title": "节点类型", "dataIndex": "nodeType", width: 100 },
-      { "title": "状态", "dataIndex": "status", width: 150 },
-      { "title": "创建时间", "dataIndex": "gmtCreate", width: 180 },
+      { title: '产品名称', dataIndex: 'name' },
+      { title: '产品型号', dataIndex: '', render: () => <span>-</span>, width: 100 },
+      { title: 'productKey', dataIndex: 'productKey', width: 140 },
+      { title: '节点类型', dataIndex: 'nodeType', width: 100 },
+      { title: '状态', dataIndex: 'status', width: 150 },
+      { title: '创建时间', dataIndex: 'gmtCreate', width: 180 },
       // { "title": "accessMethod", "dataIndex": "accessMethod" },
       // { "title": "gmtModified", "dataIndex": "gmtModified" },
       // { "title": "productModel", "dataIndex": "productModel" },
@@ -101,11 +104,15 @@ class ProductList extends PureComponent {
       // { "title": "ownerDomain", "dataIndex": "ownerDomain" },
       // { "title": "categoryId", "dataIndex": "categoryId" },
       {
-        "title": "Action",
-        "dataIndex": "",
-        "key": "x",
+        title: 'Action',
+        dataIndex: '',
+        key: 'x',
         width: 150,
-        render: (item) => <div><Link to={`/aliyun/ProductDetail/${item.productKey}`}>查看</Link>,  <MoreBtn /></div>,
+        render: item => (
+          <div>
+            <Link to={`/aliyun/ProductDetail/${item.productKey}`}>查看</Link>, <MoreBtn />
+          </div>
+        ),
       },
     ];
     // <a href={`/aliyun/ProductDetail/${item.productKey}`}>查看</a>
@@ -115,22 +122,21 @@ class ProductList extends PureComponent {
       dataSource: productInfoList,
       loading,
       onChange(page) {
-        dispatch(routerRedux.push({
-          pathname,
-          search: queryString.stringify({
-            ...query,
-            page: page.current,
-            pageSize: page.pageSize,
-          }),
-        }))
+        dispatch(
+          routerRedux.push({
+            pathname,
+            search: queryString.stringify({
+              ...query,
+              page: page.current,
+              pageSize: page.pageSize,
+            }),
+          })
+        );
       },
-    }
+    };
 
     return (
-      <PageHeaderLayout
-        title="产品列表"
-        content="产品设备信息。"
-      >
+      <PageHeaderLayout title="产品列表" content="产品设备信息。">
         <div className={styles.standardList}>
           <Card
             bordered={false}
@@ -171,9 +177,7 @@ class ProductList extends PureComponent {
   }
 }
 
-export default ProductList
-
-
+export default ProductList;
 
 // const demoItem = {
 //   "accessMethod": "MODULE_DEV",

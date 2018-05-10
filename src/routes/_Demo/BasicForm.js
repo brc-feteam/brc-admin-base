@@ -9,8 +9,9 @@ const { RangePicker } = DatePicker;
 class BasicForms extends PureComponent {
   handleSubmit = e => {
     e.preventDefault();
+    // eslint-disable-next-line
     this.props.form.validateFieldsAndScroll((err, values) => {
-      // eslint-disable-line
+      
       if (!err) {
         // eslint-disable-line
       }

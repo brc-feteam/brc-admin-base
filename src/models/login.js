@@ -6,8 +6,7 @@ import { reloadAuthorized } from '../utils/Authorized';
 // import config from '../components/Exception/typeConfig';
 
 function loopTreeData(data, pid) {
-  let result = [],
-    temp; // eslint-disable-line
+  let result = [], temp; // eslint-disable-line
   for (let i = 0; i < data.length; i += 1) {
     if (data[i].pmenuId === pid) {
       const obj = {
@@ -19,8 +18,7 @@ function loopTreeData(data, pid) {
         to: data[i].tourl,
       };
       temp = loopTreeData(data, data[i].menuId);
-      if (temp != undefined) {
-        // eslint-disable-line
+      if (temp != undefined) { // eslint-disable-line
         if (temp.length > 0) {
           obj.subs = temp;
         } else {

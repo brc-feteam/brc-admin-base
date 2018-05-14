@@ -11,6 +11,10 @@ import 'moment/locale/zh-cn';
 
 import './index.less';
 
+const debug = require('debug')('brc-app[index]');
+
+debug('The APP Start');
+
 // 1. Initialize
 const app = dva({
   history: createHistory(),

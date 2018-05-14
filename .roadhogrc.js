@@ -13,10 +13,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^/api/v2': '' },
     },
-    '/api/v3': {
-      target: 'http://127.0.0.1:7001/',
+    '/api/brc': {
+      target: 'http://47.92.2.52/',
       changeOrigin: true,
-      pathRewrite: { '^/api/v3': '/api' },
+      pathRewrite: { '^/api/brc': '' },
     },
   },
   dllPlugin: {

@@ -1,4 +1,4 @@
-import fetch from 'dva/fetch';
+import fetch from 'dva/fetch';  // isomorphic-fetch
 import { notification } from 'antd';
 import { routerRedux } from 'dva/router';
 import store from '../index';
